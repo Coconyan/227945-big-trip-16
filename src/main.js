@@ -24,9 +24,9 @@ renderTemplate(tripEventsElement, createListElement(), RenderPosition.BEFOREEND)
 const tripListElement = tripEventsElement.querySelector('.trip-events__list');
 
 renderTemplate(tripListElement, createSortTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(tripListElement, createFormEditTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(tripListElement, createFormEditTemplate(points[0]), RenderPosition.BEFOREEND);
 renderTemplate(tripListElement, createFormCreateTemplate(), RenderPosition.BEFOREEND);
 
-for (let i = 0; i < ITEMS_COUNT; i++) {
+for (let i = 1; i < ITEMS_COUNT; i++) {
   renderTemplate(tripListElement, createListItemTemplate(points[i]), RenderPosition.BEFOREEND);
 }
