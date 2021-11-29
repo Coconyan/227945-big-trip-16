@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { msToTime } from '../utils';
+import { msToTime } from '../utils/ms-to-time.js';
 
 export const createListItemTemplate = (point) => {
   const {dateStart, dateEnd, type, options, destination, price, isFavorite} = point;
