@@ -1,22 +1,15 @@
 import dayjs from 'dayjs';
 
-const createAvailableOfferList = (options) => {
-  if (options) {
-    let temp = '';
-    for (let i = 0; i < options.length; i++) {
-      temp += `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${options[i].id}" type="checkbox" name="event-offer-luggage" checked>
-      <label class="event__offer-label" for="event-offer-luggage-${options[i].id}">
-        <span class="event__offer-title">${options[i].title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${options[i].price}</span>
-      </label>
-    </div>`;
-    }
-    return temp;
-  }
-  else {return '';}
-};
+const createAvailableOfferList = (options) => (
+  options ? options.map((option) => `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${option.id}" type="checkbox" name="event-offer-luggage" checked>
+    <label class="event__offer-label" for="event-offer-luggage-${option.id}">
+      <span class="event__offer-title">${option.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${option.price}</span>
+    </label>
+  </div>`).join('') : ''
+);
 
 export const createFormEditTemplate = (point) => {
   const {dateStart, dateEnd, type, options, destination, price, description} = point;

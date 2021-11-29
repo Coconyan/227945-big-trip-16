@@ -1,25 +1,19 @@
 import dayjs from 'dayjs';
 import { msToTime } from '../utils/ms-to-time.js';
 
+const createOptionsList = (options) => (
+  options ? options.map((option) => `<li class="event__offer">
+  <span class="event__offer-title">${option.title}</span>
+  &plus;&euro;&nbsp;
+  <span class="event__offer-price">${option.price}</span>
+</li>`).join('') : ''
+);
+
 export const createListItemTemplate = (point) => {
   const {dateStart, dateEnd, type, options, destination, price, isFavorite} = point;
   const dateStarts = dayjs(dateStart);
   const dateEnds = dayjs(dateEnd);
-
-  const renderOptions = (elements) => {
-    if (elements) {
-      let temp = '';
-      for (let i = 0; i < elements.length; i++) {
-        temp += `<li class="event__offer">
-          <span class="event__offer-title">${elements[i].title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${elements[i].price}</span>
-        </li>`;
-      }
-      return temp;
-    }
-    else {return '';}
-  };
+  const optionsList = createOptionsList(options);
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
@@ -46,7 +40,7 @@ export const createListItemTemplate = (point) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${renderOptions(options)}
+        ${optionsList}
       </ul>
       <button class="${favoriteClassName}" type="button">
         <span class="visually-hidden">Add to favorite</span>
