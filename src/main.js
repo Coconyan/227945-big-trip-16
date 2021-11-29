@@ -7,6 +7,7 @@ import { createFormEditTemplate } from './view/form-edit-view.js';
 import { createListItemTemplate } from './view/list-item-view.js';
 import { createListElement } from './view/list-view.js';
 import { generatePoint } from './mock/point.js';
+import { createTripInfoTemplate } from './view/header-trip-info-view.js';
 
 const ITEMS_COUNT = 15;
 
@@ -30,3 +31,6 @@ renderTemplate(tripListElement, createFormCreateTemplate(), RenderPosition.BEFOR
 for (let i = 1; i < ITEMS_COUNT; i++) {
   renderTemplate(tripListElement, createListItemTemplate(points[i]), RenderPosition.BEFOREEND);
 }
+
+const tripMainElement = document.querySelector('.trip-main');
+renderTemplate(tripMainElement, createTripInfoTemplate(points), RenderPosition.AFTERBEGIN);
