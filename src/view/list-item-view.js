@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { msToTime } from '../utils/ms-to-time.js';
+import { createElement } from '../render.js';
 
 const createOptionsList = (options) => (
   options ? options.map((option) => `<li class="event__offer">
@@ -9,7 +10,7 @@ const createOptionsList = (options) => (
 </li>`).join('') : ''
 );
 
-export const createListItemTemplate = (point) => {
+const createListItemTemplate = (point) => {
   const {dateStart, dateEnd, type, options, destination, price, isFavorite} = point;
   const dateStarts = dayjs(dateStart);
   const dateEnds = dayjs(dateEnd);
@@ -54,3 +55,28 @@ export const createListItemTemplate = (point) => {
     </div>
   </li>`;
 };
+
+export default class ListItemView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createListItemTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

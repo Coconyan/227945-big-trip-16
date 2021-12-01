@@ -1,13 +1,13 @@
-import { renderTemplate, RenderPosition, render } from './render.js';
+import { RenderPosition, render } from './render.js';
+import { generatePoint } from './mock/point.js';
 import MenuView from './view/menu-view.js';
 import FilterView from './view/filters-view.js';
 import SortView from './view/sort-view.js';
 import FormCreateView from './view/form-create-view.js';
 import ListElementView from './view/list-view.js';
-import { createFormEditTemplate } from './view/form-edit-view.js';
-import { createListItemTemplate } from './view/list-item-view.js';
-import { generatePoint } from './mock/point.js';
-import { createTripInfoTemplate } from './view/header-trip-info-view.js';
+import EditView from './view/form-edit-view.js';
+import ListItemView from './view/list-item-view.js';
+import TripInfoView from './view/header-trip-info-view.js';
 
 const ITEMS_COUNT = 15;
 
@@ -25,12 +25,12 @@ render(tripEventsElement, new ListElementView().element, RenderPosition.BEFOREEN
 const tripListElement = tripEventsElement.querySelector('.trip-events__list');
 
 render(tripListElement, new SortView().element, RenderPosition.BEFOREEND);
-renderTemplate(tripListElement, createFormEditTemplate(points[0]), RenderPosition.BEFOREEND);
+render(tripListElement, new EditView(points[0]).element, RenderPosition.BEFOREEND);
 render(tripListElement, new FormCreateView().element, RenderPosition.BEFOREEND);
 
 for (let i = 1; i < ITEMS_COUNT; i++) {
-  renderTemplate(tripListElement, createListItemTemplate(points[i]), RenderPosition.BEFOREEND);
+  render(tripListElement, new ListItemView(points[i]).element, RenderPosition.BEFOREEND);
 }
 
 const tripMainElement = document.querySelector('.trip-main');
-renderTemplate(tripMainElement, createTripInfoTemplate(points), RenderPosition.AFTERBEGIN);
+render(tripMainElement, new TripInfoView(points).element, RenderPosition.AFTERBEGIN);

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from '../render.js';
 
 const createAvailableOfferList = (options) => (
   options ? options.map((option) => `<div class="event__offer-selector">
@@ -11,7 +12,7 @@ const createAvailableOfferList = (options) => (
   </div>`).join('') : ''
 );
 
-export const createFormEditTemplate = (point) => {
+const createFormEditTemplate = (point) => {
   const {dateStart, dateEnd, type, options, destination, price, description} = point;
   const optionsList = createAvailableOfferList(options);
 
@@ -128,3 +129,28 @@ export const createFormEditTemplate = (point) => {
     </form>
   </li>`;
 };
+
+export default class EditView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createFormEditTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
