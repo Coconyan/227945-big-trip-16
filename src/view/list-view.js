@@ -5,7 +5,7 @@ const createListElement = () => (
   </ul`
 );
 
-export default class SiteListElementView {
+export default class ListView {
   #element = null;
 
   get element() {
