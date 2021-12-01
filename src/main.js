@@ -1,6 +1,6 @@
-import { renderTemplate, RenderPosition } from './render.js';
+import { renderTemplate, RenderPosition, render } from './render.js';
 import { createMenuTemplate } from './view/menu-view.js';
-import { createFiltersTemplate } from './view/filters-view.js';
+import SiteFilterView from './view/filters-view.js';
 import { createSortTemplate } from './view/sort-view.js';
 import { createFormCreateTemplate } from './view/form-create-view.js';
 import { createFormEditTemplate } from './view/form-edit-view.js';
@@ -16,7 +16,7 @@ const tripControlsElement = document.querySelector('.trip-controls__navigation')
 const tripFiltersElement = document.querySelector('.trip-controls__filters');
 
 renderTemplate(tripControlsElement, createMenuTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(tripFiltersElement, createFiltersTemplate(), RenderPosition.BEFOREEND);
+render(tripFiltersElement, new SiteFilterView().element, RenderPosition.BEFOREEND);
 
 const tripEventsElement = document.querySelector('.trip-events');
 
