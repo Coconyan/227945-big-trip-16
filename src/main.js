@@ -7,6 +7,7 @@ import ListView from './view/list-view.js';
 import ListItemEditView from './view/form-edit-view.js';
 import ListItemView from './view/list-item-view.js';
 import TripInfoView from './view/header-trip-info-view.js';
+import ListEmptyView from './view/list-empty-view.js';
 
 const ITEMS_COUNT = 15;
 
@@ -14,12 +15,6 @@ const points = Array.from({length: ITEMS_COUNT}, generatePoint);
 const tripControlsElement = document.querySelector('.trip-controls__navigation');
 const tripFiltersElement = document.querySelector('.trip-controls__filters');
 const tripEventsElement = document.querySelector('.trip-events');
-const pointListComponent = new ListView();
-
-render(tripControlsElement, new MenuView().element, RenderPosition.BEFOREEND);
-render(tripFiltersElement, new FilterView().element, RenderPosition.BEFOREEND);
-render(tripEventsElement, pointListComponent.element, RenderPosition.BEFOREEND);
-render(pointListComponent.element, new SortView().element, RenderPosition.BEFOREEND);
 
 const renderPoint = (tripListElement, point) => {
   const pointComponent = new ListItemView(point);
@@ -60,9 +55,24 @@ const renderPoint = (tripListElement, point) => {
   render(tripListElement, pointComponent.element, RenderPosition.BEFOREEND);
 };
 
-for (let i = 0; i < ITEMS_COUNT; i++) {
-  renderPoint(pointListComponent.element, points[i]);
-}
+const renderTrip = (tripPoints) => {
+  if (tripPoints.length === 0) {
+    render(tripEventsElement, new ListEmptyView().element, RenderPosition.BEFOREEND);
+    return;
+  }
 
-const tripMainElement = document.querySelector('.trip-main');
-render(tripMainElement, new TripInfoView(points).element, RenderPosition.AFTERBEGIN);
+  const pointListComponent = new ListView();
+  render(tripEventsElement, pointListComponent.element, RenderPosition.BEFOREEND);
+  render(pointListComponent.element, new SortView().element, RenderPosition.BEFOREEND);
+
+  for (let i = 0; i < ITEMS_COUNT; i++) {
+    renderPoint(pointListComponent.element, points[i]);
+  }
+
+  const tripMainElement = document.querySelector('.trip-main');
+  render(tripMainElement, new TripInfoView(points).element, RenderPosition.AFTERBEGIN);
+};
+
+render(tripControlsElement, new MenuView().element, RenderPosition.BEFOREEND);
+render(tripFiltersElement, new FilterView().element, RenderPosition.BEFOREEND);
+renderTrip(points);
