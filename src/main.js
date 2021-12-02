@@ -1,36 +1,68 @@
-import { renderTemplate, RenderPosition } from './render.js';
-import { createMenuTemplate } from './view/menu-view.js';
-import { createFiltersTemplate } from './view/filters-view.js';
-import { createSortTemplate } from './view/sort-view.js';
-import { createFormCreateTemplate } from './view/form-create-view.js';
-import { createFormEditTemplate } from './view/form-edit-view.js';
-import { createListItemTemplate } from './view/list-item-view.js';
-import { createListElement } from './view/list-view.js';
+import { RenderPosition, render } from './render.js';
 import { generatePoint } from './mock/point.js';
-import { createTripInfoTemplate } from './view/header-trip-info-view.js';
+import MenuView from './view/menu-view.js';
+import FilterView from './view/filters-view.js';
+import SortView from './view/sort-view.js';
+import ListView from './view/list-view.js';
+import ListItemEditView from './view/form-edit-view.js';
+import ListItemView from './view/list-item-view.js';
+import TripInfoView from './view/header-trip-info-view.js';
 
 const ITEMS_COUNT = 15;
 
 const points = Array.from({length: ITEMS_COUNT}, generatePoint);
 const tripControlsElement = document.querySelector('.trip-controls__navigation');
 const tripFiltersElement = document.querySelector('.trip-controls__filters');
-
-renderTemplate(tripControlsElement, createMenuTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(tripFiltersElement, createFiltersTemplate(), RenderPosition.BEFOREEND);
-
 const tripEventsElement = document.querySelector('.trip-events');
+const pointListComponent = new ListView();
 
-renderTemplate(tripEventsElement, createListElement(), RenderPosition.BEFOREEND);
+render(tripControlsElement, new MenuView().element, RenderPosition.BEFOREEND);
+render(tripFiltersElement, new FilterView().element, RenderPosition.BEFOREEND);
+render(tripEventsElement, pointListComponent.element, RenderPosition.BEFOREEND);
+render(pointListComponent.element, new SortView().element, RenderPosition.BEFOREEND);
 
-const tripListElement = tripEventsElement.querySelector('.trip-events__list');
+const renderPoint = (tripListElement, point) => {
+  const pointComponent = new ListItemView(point);
+  const pointEditComponent = new ListItemEditView(point);
 
-renderTemplate(tripListElement, createSortTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(tripListElement, createFormEditTemplate(points[0]), RenderPosition.BEFOREEND);
-renderTemplate(tripListElement, createFormCreateTemplate(), RenderPosition.BEFOREEND);
+  const replacePointToForm = () => {
+    tripListElement.replaceChild(pointEditComponent.element, pointComponent.element);
+  };
 
-for (let i = 1; i < ITEMS_COUNT; i++) {
-  renderTemplate(tripListElement, createListItemTemplate(points[i]), RenderPosition.BEFOREEND);
+  const replaceFormToPoint = () => {
+    tripListElement.replaceChild(pointComponent.element, pointEditComponent.element);
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
+  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replacePointToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
+
+  pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  render(tripListElement, pointComponent.element, RenderPosition.BEFOREEND);
+};
+
+for (let i = 0; i < ITEMS_COUNT; i++) {
+  renderPoint(pointListComponent.element, points[i]);
 }
 
 const tripMainElement = document.querySelector('.trip-main');
-renderTemplate(tripMainElement, createTripInfoTemplate(points), RenderPosition.AFTERBEGIN);
+render(tripMainElement, new TripInfoView(points).element, RenderPosition.AFTERBEGIN);

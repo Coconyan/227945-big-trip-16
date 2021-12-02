@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from '../render.js';
 
 const COUNT_MAX_DISPLAY_POINTS = 3;
 
@@ -28,7 +29,7 @@ const getTotalCost = (points) => {
   return totalPrice;
 };
 
-export const createTripInfoTemplate = (points) => {
+const createTripInfoTemplate = (points) => {
   points.sort(compareDate);
   const totalCost = getTotalCost(points);
 
@@ -47,3 +48,29 @@ export const createTripInfoTemplate = (points) => {
   Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalCost}</span>
 </p>
 </section>`;};
+
+export default class TripInfoView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createTripInfoTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
