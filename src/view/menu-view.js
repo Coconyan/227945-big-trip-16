@@ -7,7 +7,7 @@ const createMenuTemplate = () => (
   </nav>`
 );
 
-export default class SiteMenuView {
+export default class MenuView {
   #element = null;
 
   get element() {
