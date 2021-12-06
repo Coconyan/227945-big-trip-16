@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const COUNT_MAX_DISPLAY_POINTS = 3;
 
@@ -49,28 +49,15 @@ const createTripInfoTemplate = (points) => {
 </p>
 </section>`;};
 
-export default class TripInfoView {
-  #element = null;
+export default class TripInfoView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createTripInfoTemplate(this.#point);
   }
-
-  removeElement() {
-    this.#element = null;
-  }
 }
-

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { msToTime } from '../utils/ms-to-time.js';
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createOptionsList = (options) => (
   options ? options.map((option) => `<li class="event__offer">
@@ -56,27 +56,26 @@ const createListItemTemplate = (point) => {
   </li>`;
 };
 
-export default class ListItemView {
-  #element = null;
+export default class ListItemView extends AbstractView {
   #point = null;
+  _callback = {};
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createListItemTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
+  setItemClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickItemHandler);
+  }
+
+  #clickItemHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   }
 }
