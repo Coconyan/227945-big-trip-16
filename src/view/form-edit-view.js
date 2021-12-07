@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../render.js';
+import AbstractView from './abstract-view.js';
 
 const createAvailableOfferList = (options) => (
   options ? options.map((option) => `<div class="event__offer-selector">
@@ -22,7 +22,7 @@ const createFormEditTemplate = (point) => {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -130,27 +130,36 @@ const createFormEditTemplate = (point) => {
   </li>`;
 };
 
-export default class EditView {
-  #element = null;
+export default class EditView extends AbstractView {
   #point = null;
+  _callback = {};
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createFormEditTemplate(this.#point);
   }
 
-  removeElement() {
-    this.#element = null;
+  setEditClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickEditItemHandler);
+  }
+
+  #clickEditItemHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   }
 }
