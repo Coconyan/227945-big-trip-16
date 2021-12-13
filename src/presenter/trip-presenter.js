@@ -51,7 +51,7 @@ export default class TripPresenter {
 
   #renderPoints = () => {
     this.#tripPoints
-      .forEach((point) => this.#renderPoint(point)); // todo возможно переделать и убрать слайс
+      .forEach((point) => this.#renderPoint(point));
   }
 
   #clearTripList = () => {
@@ -74,7 +74,7 @@ export default class TripPresenter {
     }
 
     this.#renderSort();
-    this.#renderPoints(); // todo ВОПРОС
+    this.#renderPoints();
     this.#renderTripInfo(this.#tripPoints);
   }
 }
