@@ -1,10 +1,10 @@
 import { RenderPosition, render } from '../utils/render.js';
+import { updateItem } from '../utils/update-item.js';
 import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
 import TripInfoView from '../view/header-trip-info-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import PointPresenter from './point-presenter.js';
-
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -15,6 +15,7 @@ export default class TripPresenter {
   #sortComponent = new SortView();
 
   #tripPoints = [];
+  #pointPresenter = new Map();
 
   constructor(tripContainer, tripInfoContainer) {
     this.#tripContainer = tripContainer;
@@ -29,19 +30,34 @@ export default class TripPresenter {
     this.#renderTrip();
   }
 
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
+  }
+
+  #handlePointChange = (updatedPoint) => {
+    this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  }
+
   #renderSort = () => {
-    render(this.#tripContainer, this.#sortComponent, RenderPosition.BEFOREEND);
+    render(this.#tripContainer, this.#sortComponent, RenderPosition.AFTERBEGIN);
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#pointListComponent);
+    const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handlePointChange, this.#handleModeChange);
     pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
   }
 
   #renderPoints = (from, to) => {
     this.#tripPoints
       .slice(from, to)
       .forEach((point) => this.#renderPoint(point)); // todo возможно переделать и убрать слайс
+  }
+
+  #clearTripList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   }
 
   #renderNoPoints = () => {

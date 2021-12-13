@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { getRandomInteger } from '../utils/get-random-integer';
+import { nanoid } from 'nanoid';
 
 const CITIES = [
   'Abakan',
@@ -150,6 +151,7 @@ export const generatePoint = () => {
   const offer = getRandomArrayElement(OFFERS);
 
   return {
+    id: nanoid(),
     type: offer.type,
     destination: getRandomArrayElement(CITIES),
     options: offer.offers,
