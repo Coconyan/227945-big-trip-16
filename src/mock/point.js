@@ -133,7 +133,7 @@ const PHOTOS = [
   'http://picsum.photos/248/152?r=4',
 ];
 
-const MAX_MINUTES_GAP = 480;
+const MAX_MINUTES_GAP = 7200;
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
