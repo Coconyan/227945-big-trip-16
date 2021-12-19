@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract-view.js';
+import SmartView from './smart-view.js';
 
 const createAvailableOfferList = (options) => (
   options ? options.map((option) => `<div class="event__offer-selector">
@@ -12,8 +12,8 @@ const createAvailableOfferList = (options) => (
   </div>`).join('') : ''
 );
 
-const createFormEditTemplate = (point) => {
-  const {dateStart, dateEnd, type, options, destination, price, description} = point;
+const createFormEditTemplate = (data) => {
+  const {dateStart, dateEnd, type, options, destination, price, description} = data;
   const optionsList = createAvailableOfferList(options);
 
   return `<li class="trip-events__item">
@@ -56,7 +56,7 @@ const createFormEditTemplate = (point) => {
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
 
@@ -84,9 +84,15 @@ const createFormEditTemplate = (point) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
+            <option value="Abakan"></option>
+            <option value="Cheremushki"></option>
+            <option value="Moscow"></option>
+            <option value="Spb"></option>
+            <option value="Minusink"></option>
+            <option value="Krasnoyarsk"></option>
+            <option value="Ivanovo"></option>
+            <option value="Irkutsk"></option>
+            <option value="Chernogorsk"></option>
           </datalist>
         </div>
 
@@ -130,17 +136,21 @@ const createFormEditTemplate = (point) => {
   </li>`;
 };
 
-export default class EditView extends AbstractView {
-  #point = null;
-  _callback = {};
-
+export default class EditView extends SmartView {
   constructor(point) {
     super();
-    this.#point = point;
+    this._data = EditView.parsePointToData(point);
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createFormEditTemplate(this.#point);
+    return createFormEditTemplate(this._data);
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
   setEditClickHandler = (callback) => {
@@ -154,12 +164,34 @@ export default class EditView extends AbstractView {
   }
 
   setFormSubmitHandler = (callback) => {
-    this._callback.click = callback;
+    this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#typeGroupHandler);
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#clickEditItemHandler);
+  }
+
+  #typeGroupHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      type: evt.target.value,
+    });
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.formSubmit(EditView.parseDataToPoint(this._data));
+  }
+
+  static parsePointToData = (point) => ({...point});
+
+  static parseDataToPoint = (data) => {
+    const point = {...data};
+    return point;
   }
 }
+

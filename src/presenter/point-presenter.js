@@ -1,6 +1,6 @@
 import { RenderPosition, render, replace, remove } from '../utils/render.js';
 import ListItemView from '../view/list-item-view.js';
-import ListItemEditView from '../view/form-edit-view.js';
+import EditView from '../view/form-edit-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -30,7 +30,7 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new ListItemView(point);
-    this.#pointEditComponent = new ListItemEditView(point);
+    this.#pointEditComponent = new EditView(point);
 
     this.#pointComponent.setItemClickHandler(this.#handlePointClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
