@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { generateDescription, generatePhotos, OFFERS } from '../mock/point.js';
 import SmartView from './smart-view.js';
 
 const createAvailableOfferList = (options) => (
@@ -11,10 +12,15 @@ const createAvailableOfferList = (options) => (
     </label>
   </div>`).join('') : ''
 );
+const createPhotosList = (photos) => (
+  photos ? photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join('') : ''
+);
 
 const createFormEditTemplate = (data) => {
-  const {dateStart, dateEnd, type, options, destination, price, description} = data;
-  const optionsList = createAvailableOfferList(options);
+  const {dateStart, dateEnd, type, destination, price, description, photos} = data;
+  const currentTypeId = OFFERS.filter((x) => x.type === type);
+  const optionsList = createAvailableOfferList(currentTypeId[0].offers);
+  const photosList = createPhotosList(photos);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -131,6 +137,11 @@ const createFormEditTemplate = (data) => {
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
           <p class="event__destination-description">${description}</p>
         </section>
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${photosList}
+          </div>
+        </div>
       </section>
     </form>
   </li>`;
@@ -146,6 +157,12 @@ export default class EditView extends SmartView {
 
   get template() {
     return createFormEditTemplate(this._data);
+  }
+
+  reset = (point) => {
+    this.updateData(
+      EditView.parsePointToData(point),
+    );
   }
 
   restoreHandlers = () => {
@@ -171,6 +188,8 @@ export default class EditView extends SmartView {
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeGroupHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationHandler);
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#clickEditItemHandler);
   }
@@ -179,6 +198,15 @@ export default class EditView extends SmartView {
     evt.preventDefault();
     this.updateData({
       type: evt.target.value,
+    });
+  }
+
+  #destinationHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      destination: evt.target.value,
+      photos: generatePhotos(),
+      description: generateDescription(),
     });
   }
 
