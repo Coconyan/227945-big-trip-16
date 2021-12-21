@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { getRandomInteger } from '../utils/get-random-integer';
 import { nanoid } from 'nanoid';
 
-const CITIES = [
+export const CITIES = [
   'Abakan',
   'Cheremushki',
   'Moscow',

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { generateDescription, generatePhotos, OFFERS } from '../mock/point.js';
+import { generateDescription, generatePhotos } from '../mock/point.js';
 import SmartView from './smart-view.js';
 
 const createAvailableOfferList = (options) => (
@@ -12,15 +12,21 @@ const createAvailableOfferList = (options) => (
     </label>
   </div>`).join('') : ''
 );
+
 const createPhotosList = (photos) => (
   photos ? photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join('') : ''
 );
 
-const createFormEditTemplate = (data) => {
+const createDestinationsList = (destinations) => (
+  destinations ? destinations.map((destination) => `<option value="${destination}"></option>`).join('') : ''
+);
+
+const createFormEditTemplate = (data, destinations, types) => {
   const {dateStart, dateEnd, type, destination, price, description, photos} = data;
-  const currentTypeId = OFFERS.filter((x) => x.type === type);
-  const optionsList = createAvailableOfferList(currentTypeId[0].offers);
+  const currentType = types.filter((x) => x.type === type);
+  const optionsList = createAvailableOfferList(currentType[0].offers);
   const photosList = createPhotosList(photos);
+  const destinationsList = createDestinationsList(destinations);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -90,15 +96,7 @@ const createFormEditTemplate = (data) => {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
           <datalist id="destination-list-1">
-            <option value="Abakan"></option>
-            <option value="Cheremushki"></option>
-            <option value="Moscow"></option>
-            <option value="Spb"></option>
-            <option value="Minusink"></option>
-            <option value="Krasnoyarsk"></option>
-            <option value="Ivanovo"></option>
-            <option value="Irkutsk"></option>
-            <option value="Chernogorsk"></option>
+            ${destinationsList}
           </datalist>
         </div>
 
@@ -148,15 +146,20 @@ const createFormEditTemplate = (data) => {
 };
 
 export default class EditView extends SmartView {
-  constructor(point) {
+  #destinations = [];
+  #types = [];
+
+  constructor(point, destinations, types) {
     super();
     this._data = EditView.parsePointToData(point);
+    this.#destinations = [...destinations];
+    this.#types = [...types];
 
     this.#setInnerHandlers();
   }
 
   get template() {
-    return createFormEditTemplate(this._data);
+    return createFormEditTemplate(this._data, this.#destinations, this.#types);
   }
 
   reset = (point) => {
