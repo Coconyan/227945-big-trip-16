@@ -1,5 +1,5 @@
 import { RenderPosition, render } from './utils/render.js';
-import { generatePoint } from './mock/point.js';
+import { CITIES, generatePoint, OFFERS } from './mock/point.js';
 import MenuView from './view/menu-view.js';
 import FilterView from './view/filters-view.js';
 import TripPresenter from './presenter/trip-presenter.js';
@@ -16,4 +16,4 @@ render(tripControlsElement, new MenuView(), RenderPosition.BEFOREEND);
 render(tripFiltersElement, new FilterView(), RenderPosition.BEFOREEND);
 
 const tripPresenter = new TripPresenter(tripEventsElement, tripMainElement);
-tripPresenter.init(points);
+tripPresenter.init(points, CITIES, OFFERS);

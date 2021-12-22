@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { getRandomInteger } from '../utils/get-random-integer';
 import { nanoid } from 'nanoid';
 
-const CITIES = [
+export const CITIES = [
   'Abakan',
   'Cheremushki',
   'Moscow',
@@ -14,7 +14,7 @@ const CITIES = [
   'Chernogorsk'
 ];
 
-const OFFERS = [
+export const OFFERS = [
   {
     type: 'taxi',
     offers: [
@@ -33,7 +33,7 @@ const OFFERS = [
     type: 'bus',
   },
   {
-    type: 'Train',
+    type: 'train',
     offers: [
       {
         id: 1,
@@ -43,7 +43,7 @@ const OFFERS = [
     ]
   },
   {
-    type: 'Ship',
+    type: 'ship',
     offers: [
       {
         id: 1,
@@ -53,7 +53,7 @@ const OFFERS = [
     ]
   },
   {
-    type: 'Drive',
+    type: 'drive',
     offers: [
       {
         id: 1,
@@ -63,7 +63,7 @@ const OFFERS = [
     ]
   },
   {
-    type: 'Flight',
+    type: 'flight',
     offers: [
       {
         id: 1,
@@ -89,7 +89,7 @@ const OFFERS = [
     ]
   },
   {
-    type: 'Check-in',
+    type: 'check-in',
     offers: [
       {
         id: 1,
@@ -99,7 +99,7 @@ const OFFERS = [
     ]
   },
   {
-    type: 'Sightseeing',
+    type: 'sightseeing',
     offers: [
       {
         id: 1,
@@ -113,7 +113,7 @@ const OFFERS = [
     ]
   },
   {
-    type: 'Restaurant',
+    type: 'restaurant',
   },
 ];
 
@@ -137,9 +137,9 @@ const MAX_MINUTES_GAP = 7200;
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
-const generateDescription = () => DESCRIPTION.slice(0, getRandomInteger(1, DESCRIPTION.length - 1)).join(' ');
+export const generateDescription = () => DESCRIPTION.slice(0, getRandomInteger(1, DESCRIPTION.length - 1)).join(' ');
 
-const generatePhotos = () => PHOTOS.slice(0, getRandomInteger(1, PHOTOS.length - 1));
+export const generatePhotos = () => PHOTOS.slice(0, getRandomInteger(1, PHOTOS.length - 1));
 
 const generateDate = () => {
   const minutes = getRandomInteger(0, MAX_MINUTES_GAP);

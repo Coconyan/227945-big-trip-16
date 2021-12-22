@@ -1,6 +1,6 @@
 import { RenderPosition, render, replace, remove } from '../utils/render.js';
 import ListItemView from '../view/list-item-view.js';
-import ListItemEditView from '../view/form-edit-view.js';
+import EditView from '../view/form-edit-view.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -15,7 +15,7 @@ export default class PointPresenter {
   #pointEditComponent = null;
 
   #point = null;
-  #mode = Mode.DEFAULT
+  #mode = Mode.DEFAULT;
 
   constructor(tripListContainer, changeData, changeMode) {
     this.#tripListContainer = tripListContainer;
@@ -23,14 +23,14 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (point) => {
+  init = (point, destinations, types) => {
     this.#point = point;
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new ListItemView(point);
-    this.#pointEditComponent = new ListItemEditView(point);
+    this.#pointEditComponent = new EditView(point, destinations, types);
 
     this.#pointComponent.setItemClickHandler(this.#handlePointClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -61,6 +61,7 @@ export default class PointPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }
@@ -81,6 +82,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   };

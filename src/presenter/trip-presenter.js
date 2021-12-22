@@ -21,16 +21,20 @@ export default class TripPresenter {
   #pointPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
   #sourcedTripPoints = [];
+  #destinations = [];
+  #types = [];
 
   constructor(tripContainer, tripInfoContainer) {
     this.#tripContainer = tripContainer;
     this.#tripInfoContainer = tripInfoContainer;
   }
 
-  init = (tripPoints) => {
+  init = (tripPoints, destinations, types) => {
     tripPoints.sort(sortDate);
     this.#tripPoints = [...tripPoints];
     this.#sourcedTripPoints = [...tripPoints];
+    this.#destinations = [...destinations];
+    this.#types = [...types];
 
     render(this.#tripContainer, this.#pointListComponent, RenderPosition.BEFOREEND);
 
@@ -79,7 +83,7 @@ export default class TripPresenter {
 
   #renderPoint = (point) => {
     const pointPresenter = new PointPresenter(this.#pointListComponent, this.#handlePointChange, this.#handleModeChange);
-    pointPresenter.init(point);
+    pointPresenter.init(point, this.#destinations, this.#types);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
 
@@ -97,7 +101,7 @@ export default class TripPresenter {
     render(this.#pointListComponent, this.#emptyListComponent, RenderPosition.BEFOREEND);
   }
 
-  #renderTripInfo = (points) => {
+  #renderTripInfo = (points) => { // todo вынести в отдельный презентер
     render(this.#tripInfoContainer, new TripInfoView(points), RenderPosition.AFTERBEGIN);
   }
 
