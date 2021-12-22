@@ -1,6 +1,9 @@
 import dayjs from 'dayjs';
 import { generateDescription, generatePhotos } from '../mock/point.js';
 import SmartView from './smart-view.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const createAvailableOfferList = (options) => (
   options ? options.map((option) => `<div class="event__offer-selector">
@@ -148,6 +151,7 @@ const createFormEditTemplate = (data, destinations, types) => {
 export default class EditView extends SmartView {
   #destinations = [];
   #types = [];
+  #datepicker = null;
 
   constructor(point, destinations, types) {
     super();
@@ -156,10 +160,21 @@ export default class EditView extends SmartView {
     this.#types = [...types];
 
     this.#setInnerHandlers();
+    this.#setDatepickerStart();
+    this.#setDatepickerEnd();
   }
 
   get template() {
     return createFormEditTemplate(this._data, this.#destinations, this.#types);
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
   }
 
   reset = (point) => {
@@ -170,6 +185,8 @@ export default class EditView extends SmartView {
 
   restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDatepickerStart();
+    this.#setDatepickerEnd();
     this.setFormSubmitHandler(this._callback.formSubmit);
   }
 
@@ -188,6 +205,36 @@ export default class EditView extends SmartView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
+  #setDatepickerStart = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('input[name="event-start-time"]'),
+      {
+        dateFormat: 'j/m/Y H:i',
+        defaultDate: this._data.dateStart,
+        minDate: 'today',
+        enableTime: true,
+        // eslint-disable-next-line camelcase
+        time_24hr: true,
+        onChange: this.#dateStartChangeHandler,
+      },
+    );
+  }
+
+  #setDatepickerEnd = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('input[name="event-end-time"]'),
+      {
+        dateFormat: 'j/m/Y H:i',
+        defaultDate: this._data.dateEnd,
+        minDate: this._data.dateStart,
+        enableTime: true,
+        // eslint-disable-next-line camelcase
+        time_24hr: true,
+        onChange: this.#dateEndChangeHandler,
+      },
+    );
+  }
+
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeGroupHandler);
@@ -195,6 +242,18 @@ export default class EditView extends SmartView {
       .addEventListener('change', this.#destinationHandler);
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#clickEditItemHandler);
+  }
+
+  #dateStartChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateStart: userDate,
+    });
+  }
+
+  #dateEndChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateEnd: userDate,
+    });
   }
 
   #typeGroupHandler = (evt) => {
