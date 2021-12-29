@@ -5,6 +5,13 @@ import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
+const DEFAULT_DATAPICKER_SETTING = {
+  dateFormat: 'j/m/Y H:i',
+  enableTime: true,
+  // eslint-disable-next-line camelcase
+  time_24hr: true,
+};
+
 const createAvailableOfferList = (options) => (
   options ? options.map((option) => `<div class="event__offer-selector">
     <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${option.id}" type="checkbox" name="event-offer-luggage" checked>
@@ -151,7 +158,8 @@ const createFormEditTemplate = (data, destinations, types) => {
 export default class EditView extends SmartView {
   #destinations = [];
   #types = [];
-  #datepicker = null;
+  #datepickerStart = null;
+  #datepickerEnd = null;
 
   constructor(point, destinations, types) {
     super();
@@ -171,9 +179,14 @@ export default class EditView extends SmartView {
   removeElement = () => {
     super.removeElement();
 
-    if (this.#datepicker) {
-      this.#datepicker.destroy();
-      this.#datepicker = null;
+    if (this.#datepickerStart) {
+      this.#datepickerStart.destroy();
+      this.#datepickerStart = null;
+    }
+
+    if (this.#datepickerEnd) {
+      this.#datepickerEnd.destroy();
+      this.#datepickerEnd = null;
     }
   }
 
@@ -206,33 +219,27 @@ export default class EditView extends SmartView {
   }
 
   #setDatepickerStart = () => {
-    this.#datepicker = flatpickr(
+    this.#datepickerStart = flatpickr(
       this.element.querySelector('input[name="event-start-time"]'),
-      {
-        dateFormat: 'j/m/Y H:i',
-        defaultDate: this._data.dateStart,
-        minDate: 'today',
-        enableTime: true,
-        // eslint-disable-next-line camelcase
-        time_24hr: true,
-        onChange: this.#dateStartChangeHandler,
-      },
-    );
+      Object.assign({}, DEFAULT_DATAPICKER_SETTING,
+        {
+          defaultDate: this._data.dateStart,
+          minDate: 'today',
+          onChange: this.#dateStartChangeHandler,
+        },
+      ));
   }
 
   #setDatepickerEnd = () => {
-    this.#datepicker = flatpickr(
+    this.#datepickerEnd = flatpickr(
       this.element.querySelector('input[name="event-end-time"]'),
-      {
-        dateFormat: 'j/m/Y H:i',
-        defaultDate: this._data.dateEnd,
-        minDate: this._data.dateStart,
-        enableTime: true,
-        // eslint-disable-next-line camelcase
-        time_24hr: true,
-        onChange: this.#dateEndChangeHandler,
-      },
-    );
+      Object.assign({}, DEFAULT_DATAPICKER_SETTING,
+        {
+          defaultDate: this._data.dateEnd,
+          minDate: this._data.dateStart,
+          onChange: this.#dateEndChangeHandler,
+        },
+      ));
   }
 
   #setInnerHandlers = () => {
