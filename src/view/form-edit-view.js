@@ -201,6 +201,7 @@ export default class EditView extends SmartView {
     this.#setDatepickerStart();
     this.#setDatepickerEnd();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   setEditClickHandler = (callback) => {
@@ -208,14 +209,24 @@ export default class EditView extends SmartView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickEditItemHandler);
   }
 
-  #clickEditItemHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.click();
-  }
-
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EditView.parseDataToPoint(this._data));
+  }
+
+  #clickEditItemHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   }
 
   #setDatepickerStart = () => {
@@ -245,10 +256,18 @@ export default class EditView extends SmartView {
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeGroupHandler);
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#priceChangeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationHandler);
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#clickEditItemHandler);
+  }
+
+  #priceChangeHandler = (evt) => {
+    this.updateData({
+      price: +evt.target.value,
+    });
   }
 
   #dateStartChangeHandler = ([userDate]) => {
