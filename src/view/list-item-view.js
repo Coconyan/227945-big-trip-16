@@ -12,7 +12,7 @@ const createOptionsList = (options) => (
 
 const createListItemTemplate = (point) => {
   const {dateStart, dateEnd, type, options, destination, price, isFavorite} = point;
-  const dateStarts = dayjs(dateStart);
+  const dateStarts = dayjs(dateStart); //todo посмотреть наименования переменных по тз
   const dateEnds = dayjs(dateEnd);
   const optionsList = createOptionsList(options);
 

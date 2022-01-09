@@ -6,11 +6,13 @@ import ListView from '../view/list-view.js';
 import TripInfoView from '../view/header-trip-info-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import PointPresenter from './point-presenter.js';
+import { filter } from '../utils/filter.js';
 
 export default class TripPresenter {
   #tripContainer = null;
   #tripInfoContainer = null;
   #pointsModel = null;
+  #filterModel = null;
 
   #pointListComponent = new ListView();
   #emptyListComponent = new ListEmptyView();
@@ -22,25 +24,31 @@ export default class TripPresenter {
   #destinations = [];
   #types = [];
 
-  constructor(tripContainer, tripInfoContainer, pointsModel) {
+  constructor(tripContainer, tripInfoContainer, pointsModel, filterModel) {
     this.#tripContainer = tripContainer;
     this.#tripInfoContainer = tripInfoContainer;
     this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    const filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#pointsModel.points].sort(sortTime);
+        return filteredPoints.sort(sortTime);
       case SortType.PRICE:
-        return [...this.#pointsModel.points].sort(sortPrice);
+        return filteredPoints.sort(sortPrice);
       case SortType.DEFAULT:
-        return [...this.#pointsModel.points].sort(sortDate);
+        return filteredPoints.sort(sortDate);
     }
 
-    return this.#pointsModel.points;
+    return this.filteredPoints;
   }
 
   init = (destinations, types) => {
