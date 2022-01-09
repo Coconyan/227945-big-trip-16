@@ -1,9 +1,21 @@
 import dayjs from 'dayjs';
+import he from 'he';
 import { generateDescription, generatePhotos } from '../mock/point.js';
 import SmartView from './smart-view.js';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+const BLANK_POINT = {
+  type: 'flight',
+  destination: '',
+  options: '',
+  description: '',
+  photos: [''],
+  dateStart: Date.now(),
+  dateEnd: Date.now(),
+  price: 0,
+  isFavorite: false,
+};
 
 const DEFAULT_DATAPICKER_SETTING = {
   dateFormat: 'j/m/Y H:i',
@@ -104,7 +116,7 @@ const createFormEditTemplate = (data, destinations, types) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationsList}
           </datalist>
@@ -123,7 +135,7 @@ const createFormEditTemplate = (data, destinations, types) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -161,7 +173,7 @@ export default class EditView extends SmartView {
   #datepickerStart = null;
   #datepickerEnd = null;
 
-  constructor(point, destinations, types) {
+  constructor(point = BLANK_POINT, destinations, types) {
     super();
     this._data = EditView.parsePointToData(point);
     this.#destinations = [...destinations];

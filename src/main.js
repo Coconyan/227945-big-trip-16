@@ -25,3 +25,8 @@ const tripPresenter = new TripPresenter(tripEventsElement, tripMainElement, poin
 const filterPresenter = new FilterPresenter(tripFiltersElement, filterModel, pointsModel);
 filterPresenter.init();
 tripPresenter.init(CITIES, OFFERS);
+
+document.querySelector('.trip-main__event-add-btn').addEventListener('click', (evt) => {
+  evt.preventDefault();
+  tripPresenter.createTask();
+});
