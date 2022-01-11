@@ -142,7 +142,7 @@ export const generateDescription = () => DESCRIPTION.slice(0, getRandomInteger(1
 export const generatePhotos = () => PHOTOS.slice(0, getRandomInteger(1, PHOTOS.length - 1));
 
 const generateDate = () => {
-  const minutes = getRandomInteger(0, MAX_MINUTES_GAP);
+  const minutes = getRandomInteger(-3600, MAX_MINUTES_GAP);
 
   return dayjs().add(minutes, 'minute').toDate();
 };

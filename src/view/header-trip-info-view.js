@@ -41,7 +41,7 @@ const createTripInfoTemplate = (points) => {
 <div class="trip-info__main">
   <h1 class="trip-info__title">${tripLine}</h1>
 
-  <p class="trip-info__dates">${dayjs(points[0].dateStarts).format('MMM DD')} &mdash; ${dayjs(points[0].dateEnd).format('MMM DD')}</p>
+  <p class="trip-info__dates">${dayjs(points[0].dateStarts).format('MMM DD')} &mdash; ${dayjs(points[points.length - 1].dateEnd).format('MMM DD')}</p>
 </div>
 
 <p class="trip-info__cost">
@@ -50,14 +50,14 @@ const createTripInfoTemplate = (points) => {
 </section>`;};
 
 export default class TripInfoView extends AbstractView {
-  #point = null;
+  #points = null;
 
-  constructor(point) {
+  constructor(points) {
     super();
-    this.#point = point;
+    this.#points = points;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#point);
+    return createTripInfoTemplate(this.#points);
   }
 }

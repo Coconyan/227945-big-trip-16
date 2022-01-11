@@ -1,6 +1,10 @@
 import { RenderPosition, render, replace, remove } from '../utils/render.js';
 import ListItemView from '../view/list-item-view.js';
 import EditView from '../view/form-edit-view.js';
+import { UpdateType, UserAction } from '../utils/const.js';
+import dayjs from 'dayjs';
+
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -36,6 +40,8 @@ export default class PointPresenter {
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#tripListContainer, this.#pointComponent, RenderPosition.BEFOREEND);
@@ -95,11 +101,35 @@ export default class PointPresenter {
     this.#replaceFormToPoint();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (update) => {
+    // Проверяем, поменялись ли в точке данные, которые попадают под фильтрацию,
+    // а значит требуют перерисовки списка - если таких нет, это PATCH-обновление
+    const isMinorUpdate =
+      !isDatesEqual(this.#point.dateStart, update.dateStart) ||
+      !isDatesEqual(this.#point.dateEnd, update.dateEnd) ||
+      (this.#point.destination === update.destination);
+
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
   };
 
+  #handleDeleteClick = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  }
+
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
   };
 }

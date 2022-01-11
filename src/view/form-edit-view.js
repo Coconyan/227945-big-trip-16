@@ -1,9 +1,29 @@
 import dayjs from 'dayjs';
+import he from 'he';
 import { generateDescription, generatePhotos } from '../mock/point.js';
 import SmartView from './smart-view.js';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+const BLANK_POINT = {
+  type: 'flight',
+  destination: '',
+  options: '',
+  description: '',
+  photos: [''],
+  dateStart: dayjs().toDate(),
+  dateEnd: dayjs().toDate(),
+  price: 0,
+  isFavorite: false,
+  isNewPoint: true,
+};
+
+const DEFAULT_DATAPICKER_SETTING = {
+  dateFormat: 'j/m/Y H:i',
+  enableTime: true,
+  // eslint-disable-next-line camelcase
+  time_24hr: true,
+};
 
 const createAvailableOfferList = (options) => (
   options ? options.map((option) => `<div class="event__offer-selector">
@@ -46,47 +66,47 @@ const createFormEditTemplate = (data, destinations, types) => {
               <legend class="visually-hidden">Event type</legend>
 
               <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
+                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${type === types[0].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
+                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${type === types[1].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
+                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${type === types[2].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
+                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${type === types[3].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
+                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${type === types[4].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${type === types[5].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
+                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${type === types[6].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
+                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${type === types[7].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
+                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${type === types[8].type ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
               </div>
             </fieldset>
@@ -97,7 +117,7 @@ const createFormEditTemplate = (data, destinations, types) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationsList}
           </datalist>
@@ -116,12 +136,12 @@ const createFormEditTemplate = (data, destinations, types) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
-        <button class="event__rollup-btn" type="button">
+        <button class="event__reset-btn" type="reset">${data.isNewPoint ? 'Cancel' : 'Delete'}</button>        
+        <button class="event__rollup-btn" type="button" ${data.isNewPoint ? 'style="display: none !important"' : ''}>
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
@@ -151,9 +171,10 @@ const createFormEditTemplate = (data, destinations, types) => {
 export default class EditView extends SmartView {
   #destinations = [];
   #types = [];
-  #datepicker = null;
+  #datepickerStart = null;
+  #datepickerEnd = null;
 
-  constructor(point, destinations, types) {
+  constructor(point = BLANK_POINT, destinations, types) {
     super();
     this._data = EditView.parsePointToData(point);
     this.#destinations = [...destinations];
@@ -171,9 +192,14 @@ export default class EditView extends SmartView {
   removeElement = () => {
     super.removeElement();
 
-    if (this.#datepicker) {
-      this.#datepicker.destroy();
-      this.#datepicker = null;
+    if (this.#datepickerStart) {
+      this.#datepickerStart.destroy();
+      this.#datepickerStart = null;
+    }
+
+    if (this.#datepickerEnd) {
+      this.#datepickerEnd.destroy();
+      this.#datepickerEnd = null;
     }
   }
 
@@ -188,6 +214,7 @@ export default class EditView extends SmartView {
     this.#setDatepickerStart();
     this.#setDatepickerEnd();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   setEditClickHandler = (callback) => {
@@ -195,53 +222,65 @@ export default class EditView extends SmartView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickEditItemHandler);
   }
 
-  #clickEditItemHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.click();
-  }
-
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EditView.parseDataToPoint(this._data));
+  }
+
+  #clickEditItemHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  }
+
   #setDatepickerStart = () => {
-    this.#datepicker = flatpickr(
+    this.#datepickerStart = flatpickr(
       this.element.querySelector('input[name="event-start-time"]'),
-      {
-        dateFormat: 'j/m/Y H:i',
-        defaultDate: this._data.dateStart,
-        minDate: 'today',
-        enableTime: true,
-        // eslint-disable-next-line camelcase
-        time_24hr: true,
-        onChange: this.#dateStartChangeHandler,
-      },
-    );
+      Object.assign({}, DEFAULT_DATAPICKER_SETTING,
+        {
+          defaultDate: this._data.dateStart,
+          minDate: 'today',
+          onChange: this.#dateStartChangeHandler,
+        },
+      ));
   }
 
   #setDatepickerEnd = () => {
-    this.#datepicker = flatpickr(
+    this.#datepickerEnd = flatpickr(
       this.element.querySelector('input[name="event-end-time"]'),
-      {
-        dateFormat: 'j/m/Y H:i',
-        defaultDate: this._data.dateEnd,
-        minDate: this._data.dateStart,
-        enableTime: true,
-        // eslint-disable-next-line camelcase
-        time_24hr: true,
-        onChange: this.#dateEndChangeHandler,
-      },
-    );
+      Object.assign({}, DEFAULT_DATAPICKER_SETTING,
+        {
+          defaultDate: this._data.dateEnd,
+          minDate: this._data.dateStart,
+          onChange: this.#dateEndChangeHandler,
+        },
+      ));
   }
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#typeGroupHandler);
+    this.element.querySelector('.event__input--price')
+      .addEventListener('input', this.#priceChangeHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationHandler);
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#clickEditItemHandler);
+  }
+
+  #priceChangeHandler = (evt) => {
+    this.updateData({
+      price: Number(evt.target.value),
+    }, true);
   }
 
   #dateStartChangeHandler = ([userDate]) => {
@@ -274,6 +313,9 @@ export default class EditView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+    if (this._data.isNewPoint) {
+      delete this._data.isNewPoint;
+    }
     this._callback.formSubmit(EditView.parseDataToPoint(this._data));
   }
 
