@@ -265,7 +265,8 @@ main {
     opacity: 0.6; }
   .trip-tabs__btn--active, .trip-tabs__btn--active:hover, .trip-tabs__btn--active:active {
     opacity: 1;
-    cursor: default; }
+    cursor: default;
+    pointer-events: none; }
 
 .trip-filters {
   display: -ms-flexbox;
