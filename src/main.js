@@ -33,13 +33,13 @@ const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.POINTS:
       filterPresenter.init();
-      tripPresenter.init(CITIES, OFFERS);
+      tripPresenter.init(CITIES, OFFERS, true);
       siteMenuComponent.setMenuItem(MenuItem.POINTS);
       remove(statisticComponent);
       break;
     case MenuItem.STATISTICS:
       filterPresenter.destroy();
-      tripPresenter.destroy();
+      tripPresenter.destroy(true);
       siteMenuComponent.setMenuItem(MenuItem.STATISTICS);
       statisticComponent = new StatisticsView(pointsModel.points, OFFERS);
       render(tripEventsElement, statisticComponent, RenderPosition.BEFOREEND);

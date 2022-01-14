@@ -52,7 +52,7 @@ export default class TripPresenter {
     return this.filteredPoints;
   }
 
-  init = (destinations, types) => {
+  init = (destinations, types, withoutTripInfo) => {
     this.#destinations = [...destinations];
     this.#types = [...types];
 
@@ -61,14 +61,17 @@ export default class TripPresenter {
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
 
-    this.#renderTrip();
+    this.#renderTrip(withoutTripInfo);
   }
 
-  destroy = () => {
-    this.#clearTrip({resetSortType: true});
+  destroy = (withoutTripInfo) => {
+    if (withoutTripInfo) {
+      this.#clearTrip({resetSortType: true}, withoutTripInfo);
+    } else {
+      this.#clearTrip({resetSortType: true});
+    }
 
     remove(this.#pointListComponent);
-    //remove(this.#tripComponent);
 
     this.#pointsModel.removeObserver(this.#handleModelEvent);
     this.#filterModel.removeObserver(this.#handleModelEvent);
@@ -100,7 +103,6 @@ export default class TripPresenter {
   }
 
   #handleModelEvent = (updateType, data) => {
-    // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenter.get(data.id).init(data, this.#destinations, this.#types);
@@ -145,13 +147,15 @@ export default class TripPresenter {
     points.forEach((point) => this.#renderPoint(point));
   }
 
-  #clearTrip = ({resetSortType = false} = {}) => {
+  #clearTrip = ({resetSortType = false} = {}, withoutTripInfo) => {
     this.#pointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
-    remove(this.#tripInfoComponent);
+    if (!withoutTripInfo) {
+      remove(this.#tripInfoComponent);
+    }
 
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
@@ -172,7 +176,7 @@ export default class TripPresenter {
     render(this.#tripInfoContainer, this.#tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
 
-  #renderTrip = () => {
+  #renderTrip = (withoutTripInfo) => {
     if (this.points.length === 0) {
       this.#renderNoPoints();
       return;
@@ -180,6 +184,8 @@ export default class TripPresenter {
 
     this.#renderSort();
     this.#renderPoints(this.points);
-    this.#renderTripInfo(this.points);
+    if (!withoutTripInfo) {
+      this.#renderTripInfo(this.points);
+    }
   }
 }
