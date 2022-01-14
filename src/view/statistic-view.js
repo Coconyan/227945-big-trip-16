@@ -6,41 +6,41 @@ import dayjs from 'dayjs';
 
 const getTypeMoney = (points, types) => (
   types.map((type) => {
-    let sum = 0;
-    points.forEach((point) => {
+    const sum = points.reduce((accumulator, point) => {
       if (type === point.type) {
-        sum += point.price;
+        return accumulator + point.price;
       }
-    });
+      return accumulator;
+    }, 0);
     return sum;
   })
 );
 
 const getTypeCount = (points, types) => (
   types.map((type) => {
-    let count = 0;
-    points.forEach((point) => {
+    const count = points.reduce((accumulator, point) => {
       if (type === point.type) {
-        count += 1;
+        return ++accumulator;
       }
-    });
+      return accumulator;
+    }, 0);
     return count;
   })
 );
+
 const getTypeTime = (points, types) => (
   types.map((type) => {
-    let time = 0;
-    points.forEach((point) => {
+    const time = points.reduce((accumulator, point) => {
       if (type === point.type) {
-        time += Math.abs(dayjs(point.dateStart).diff(dayjs(point.dateEnd)));
+        return accumulator + Math.abs(dayjs(point.dateStart).diff(dayjs(point.dateEnd)));
       }
-    });
+      return accumulator;
+    }, 0);
     return time;
   })
 );
 
 const renderMoneyChart = (moneyCtx, points, types) => (
-  // график по цене
   new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
@@ -187,7 +187,7 @@ const renderTimeChart = (timeCtx, points, types) => (
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
         barThickness: 44,
-        minBarLength: 50,
+        minBarLength: 95,
       }],
     },
     options: {
