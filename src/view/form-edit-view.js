@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import he from 'he';
-import { generateDescription, generatePhotos } from '../mock/point.js';
 import SmartView from './smart-view.js';
 import flatpickr from 'flatpickr';
 
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+
 const BLANK_POINT = {
   type: 'flight',
   destination: '',
@@ -25,10 +25,16 @@ const DEFAULT_DATAPICKER_SETTING = {
   time_24hr: true,
 };
 
-const createAvailableOfferList = (options) => (
+const createAvailableOfferList = (options, offers) => (
   options ? options.map((option) => `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${option.id}" type="checkbox" name="event-offer-luggage" checked>
-    <label class="event__offer-label" for="event-offer-luggage-${option.id}">
+    <input 
+      class="event__offer-checkbox  
+      visually-hidden" 
+      id="event-offer-${option.id}" 
+      type="checkbox" 
+      name="event-offer-${option.id}" 
+      ${offers.find((offer) => offer.id === option.id) ? 'checked' : ''}>
+    <label class="event__offer-label" for="event-offer-${option.id}">
       <span class="event__offer-title">${option.title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${option.price}</span>
@@ -37,18 +43,18 @@ const createAvailableOfferList = (options) => (
 );
 
 const createPhotosList = (photos) => (
-  photos ? photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`).join('') : ''
+  photos ? photos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join('') : ''
 );
 
 const createDestinationsList = (destinations) => (
-  destinations ? destinations.map((destination) => `<option value="${destination}"></option>`).join('') : ''
+  destinations ? destinations.map((destination) => `<option value="${destination.name}"></option>`).join('') : ''
 );
 
 const createFormEditTemplate = (data, destinations, types) => {
-  const {dateStart, dateEnd, type, destination, price, description, photos} = data;
+  const {dateStart, dateEnd, type, destination, price, offers} = data;
   const currentType = types.filter((x) => x.type === type);
-  const optionsList = createAvailableOfferList(currentType[0].offers);
-  const photosList = createPhotosList(photos);
+  const optionsList = createAvailableOfferList(currentType[0].offers, offers.length !== 0 ? offers : []);
+  const photosList = createPhotosList(destination.pictures);
   const destinationsList = createDestinationsList(destinations);
 
   return `<li class="trip-events__item">
@@ -66,47 +72,47 @@ const createFormEditTemplate = (data, destinations, types) => {
               <legend class="visually-hidden">Event type</legend>
 
               <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${type === types[0].type ? ' checked' : ''}>
+                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${type === 'taxi' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${type === types[1].type ? ' checked' : ''}>
+                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${type === 'bus' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${type === types[2].type ? ' checked' : ''}>
+                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${type === 'train' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${type === types[3].type ? ' checked' : ''}>
+                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${type === 'ship' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${type === types[4].type ? ' checked' : ''}>
+                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${type === 'drive' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${type === types[5].type ? ' checked' : ''}>
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${type === 'flight' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${type === types[6].type ? ' checked' : ''}>
+                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${type === 'check-in' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${type === types[7].type ? ' checked' : ''}>
+                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${type === 'sightseeing' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
               </div>
 
               <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${type === types[8].type ? ' checked' : ''}>
+                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${type === 'restaurant' ? ' checked' : ''}>
                 <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
               </div>
             </fieldset>
@@ -117,7 +123,7 @@ const createFormEditTemplate = (data, destinations, types) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination)}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinationsList}
           </datalist>
@@ -156,7 +162,7 @@ const createFormEditTemplate = (data, destinations, types) => {
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+          <p class="event__destination-description">${destination.description}</p>
         </section>
         <div class="event__photos-container">
           <div class="event__photos-tape">
@@ -275,6 +281,8 @@ export default class EditView extends SmartView {
       .addEventListener('change', this.#destinationHandler);
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#clickEditItemHandler);
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('change', this.#availableOffersHandler);
   }
 
   #priceChangeHandler = (evt) => {
@@ -299,15 +307,32 @@ export default class EditView extends SmartView {
     evt.preventDefault();
     this.updateData({
       type: evt.target.value,
+      offers: [],
     });
+  }
+
+  #availableOffersHandler = (evt) => {
+    const currentType = this.#types.filter((x) => x.type === this._data.type);
+    const checkedOffers = [];
+    currentType[0].offers.forEach((offer) => {
+      if (evt.currentTarget.querySelector(`#event-offer-${offer.id}:checked`)) {
+        checkedOffers.push({id: offer.id, title: offer.title, price: offer.price});
+      }
+    });
+    this.updateData({
+      offers: checkedOffers,
+    }, true);
   }
 
   #destinationHandler = (evt) => {
     evt.preventDefault();
+    const currentDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
     this.updateData({
-      destination: evt.target.value,
-      photos: generatePhotos(),
-      description: generateDescription(),
+      destination: {
+        name: evt.target.value,
+        description: currentDestination.description,
+        pictures: currentDestination.pictures
+      }
     });
   }
 
