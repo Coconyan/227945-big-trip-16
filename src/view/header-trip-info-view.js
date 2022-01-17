@@ -25,6 +25,11 @@ const getTotalCost = (points) => {
   let totalPrice = 0;
   points.forEach((point) => {
     totalPrice += point.price;
+    if (point.offers.length !== 0) {
+      point.offers.forEach((offer) => {
+        totalPrice += offer.price;
+      });
+    }
   });
   return totalPrice;
 };

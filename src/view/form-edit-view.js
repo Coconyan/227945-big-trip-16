@@ -7,10 +7,12 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const BLANK_POINT = {
   type: 'flight',
-  destination: '',
-  options: '',
-  description: '',
-  photos: [''],
+  destination: {
+    description: 'Description',
+    name: '',
+    pictures: []
+  },
+  offers: [],
   dateStart: dayjs().toDate(),
   dateEnd: dayjs().toDate(),
   price: 0,

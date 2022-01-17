@@ -26,8 +26,6 @@ export default class TripPresenter {
   #pointNewPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
-  #destinations = [];
-  #types = [];
   #isLoading = true;
 
   constructor(tripContainer, tripInfoContainer, pointsModel, filterModel) {
