@@ -11,10 +11,10 @@ const createOptionsList = (options) => (
 );
 
 const createListItemTemplate = (point) => {
-  const {dateStart, dateEnd, type, options, destination, price, isFavorite} = point;
+  const {dateStart, dateEnd, type, offers, destination, price, isFavorite} = point;
   const dateStarts = dayjs(dateStart); //todo посмотреть наименования переменных по тз
   const dateEnds = dayjs(dateEnd);
-  const optionsList = createOptionsList(options);
+  const optionsList = createOptionsList(offers);
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
@@ -27,7 +27,7 @@ const createListItemTemplate = (point) => {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destination}</h3>
+      <h3 class="event__title">${type} ${destination.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${dayjs(dateStarts).format('YYYY-MM-DDThh:mm')}">${dayjs(dateStarts).format('hh:mm')}</time>

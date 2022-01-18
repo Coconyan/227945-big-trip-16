@@ -7,15 +7,15 @@ const compareDate = (pointA, pointB) => pointA.dateStart.getTime() - pointB.date
 
 const createTripLineWithSkip = (points) => {
   let tripLine = '';
-  tripLine += `${points[0].destination} &mdash; ... &mdash; `;
-  tripLine += `${points[points.length - 1].destination}`;
+  tripLine += `${points[0].destination.name} &mdash; ... &mdash; `;
+  tripLine += `${points[points.length - 1].destination.name}`;
   return tripLine;
 };
 
 const createTripLine = (points) => {
   let tripLine = '';
   points.forEach((point) => {
-    tripLine += `${point.destination} &mdash; `;
+    tripLine += `${point.destination.name} &mdash; `;
   });
   tripLine = tripLine.slice(0, -9);
   return tripLine;
@@ -25,6 +25,11 @@ const getTotalCost = (points) => {
   let totalPrice = 0;
   points.forEach((point) => {
     totalPrice += point.price;
+    if (point.offers.length !== 0) {
+      point.offers.forEach((offer) => {
+        totalPrice += offer.price;
+      });
+    }
   });
   return totalPrice;
 };
