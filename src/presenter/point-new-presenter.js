@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { remove, render, RenderPosition } from '../utils/render.js';
 import { UserAction, UpdateType } from '../utils/const.js';
 import EditView from '../view/form-edit-view.js';
@@ -26,6 +25,7 @@ export default class pointNewPresenter {
     this.#pointEditComponent = new EditView(undefined ,destinations, types);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    document.querySelector('.trip-main__event-add-btn ').disabled = true;
 
     render(this.#pointListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
 
@@ -39,17 +39,35 @@ export default class pointNewPresenter {
 
     remove(this.#pointEditComponent);
     this.#pointEditComponent = null;
+    document.querySelector('.trip-main__event-add-btn ').disabled = false;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  setSaving = () => {
+    this.#pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
   }
 
   #handleFormSubmit = (point) => {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      // Пока у нас нет сервера, который бы после сохранения
-      // выдывал честный id задачи, нам нужно позаботиться об этом самим
-      {id: nanoid(), ...point},
+      point,
     );
     this.destroy();
   }

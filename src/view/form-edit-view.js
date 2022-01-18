@@ -27,7 +27,7 @@ const DEFAULT_DATAPICKER_SETTING = {
   time_24hr: true,
 };
 
-const createAvailableOfferList = (options, offers) => (
+const createAvailableOfferList = (options, offers, isDisabled) => (
   options ? options.map((option) => `<div class="event__offer-selector">
     <input 
       class="event__offer-checkbox  
@@ -35,7 +35,8 @@ const createAvailableOfferList = (options, offers) => (
       id="event-offer-${option.id}" 
       type="checkbox" 
       name="event-offer-${option.id}" 
-      ${offers.find((offer) => offer.id === option.id) ? 'checked' : ''}>
+      ${offers.find((offer) => offer.id === option.id) ? 'checked' : ''}
+      ${isDisabled ? 'disabled' : ''}>
     <label class="event__offer-label" for="event-offer-${option.id}">
       <span class="event__offer-title">${option.title}</span>
       &plus;&euro;&nbsp;
@@ -52,12 +53,17 @@ const createDestinationsList = (destinations) => (
   destinations ? destinations.map((destination) => `<option value="${destination.name}"></option>`).join('') : ''
 );
 
+const createResetButtonText = (isDeleting) => (
+  isDeleting ? 'Deleting...' : 'Delete'
+);
+
 const createFormEditTemplate = (data, destinations, types) => {
-  const {dateStart, dateEnd, type, destination, price, offers} = data;
+  const {dateStart, dateEnd, type, destination, price, offers, isDisabled, isSaving, isDeleting} = data;
   const currentType = types.filter((x) => x.type === type);
-  const optionsList = createAvailableOfferList(currentType[0].offers, offers.length !== 0 ? offers : []);
+  const optionsList = createAvailableOfferList(currentType[0].offers, offers.length !== 0 ? offers : [], isDisabled);
   const photosList = createPhotosList(destination.pictures);
   const destinationsList = createDestinationsList(destinations);
+  const resetButtonText = data.isNewPoint ? 'Cancel' : createResetButtonText(isDeleting);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -70,7 +76,7 @@ const createFormEditTemplate = (data, destinations, types) => {
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
           <div class="event__type-list">
-            <fieldset class="event__type-group">
+            <fieldset class="event__type-group" ${isDisabled ? 'disabled' : ''}>
               <legend class="visually-hidden">Event type</legend>
 
               <div class="event__type-item">
@@ -125,7 +131,7 @@ const createFormEditTemplate = (data, destinations, types) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" required value="${he.encode(destination.name)}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
           <datalist id="destination-list-1">
             ${destinationsList}
           </datalist>
@@ -133,10 +139,10 @@ const createFormEditTemplate = (data, destinations, types) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateStart).format('DD/MM/YY hh:mm')}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateStart).format('DD/MM/YY hh:mm')}" ${isDisabled ? 'disabled' : ''}>
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateEnd).format('DD/MM/YY hh:mm')}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateEnd).format('DD/MM/YY hh:mm')}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -144,11 +150,15 @@ const createFormEditTemplate = (data, destinations, types) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" required min="1" value="${price}" ${isDisabled ? 'disabled' : ''}>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${data.isNewPoint ? 'Cancel' : 'Delete'}</button>        
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+          ${isSaving ? 'Saving...' : 'Save'}
+        </button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+          ${resetButtonText}
+        </button>
         <button class="event__rollup-btn" type="button" ${data.isNewPoint ? 'style="display: none !important"' : ''}>
           <span class="visually-hidden">Open event</span>
         </button>
@@ -346,10 +356,17 @@ export default class EditView extends SmartView {
     this._callback.formSubmit(EditView.parseDataToPoint(this._data));
   }
 
-  static parsePointToData = (point) => ({...point});
+  static parsePointToData = (point) => ({...point,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
+  });
 
   static parseDataToPoint = (data) => {
     const point = {...data};
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
     return point;
   }
 }
