@@ -48,7 +48,7 @@ export default class PointsModel extends AbstractObservable {
     }
 
     try {
-      const response = await this.#apiService.updatePoint(update);
+      const response = await this.#apiService.updatePoint(this.#adaptToServer(update));
       const updatedPoint = this.#adaptToClient(response);
       this.#points = [
         ...this.#points.slice(0, index),
@@ -68,6 +68,22 @@ export default class PointsModel extends AbstractObservable {
     ];
 
     this._notify(updateType, update);
+  }
+
+  #adaptToServer = (point) => {
+    const adaptedPoint = {...point,
+      'base_price': point.price,
+      'date_from': point.dateStart instanceof Date ? point.dateStart.toISOString() : null,
+      'date_to': point.dateEnd instanceof Date ? point.dateEnd.toISOString() : null,
+      'is_favorite': point.isFavorite,
+    };
+
+    delete adaptedPoint.price;
+    delete adaptedPoint.dateStart;
+    delete adaptedPoint.dateEnd;
+    delete adaptedPoint.isFavorite;
+
+    return adaptedPoint;
   }
 
   #adaptToClient = (point) => {
