@@ -6,7 +6,7 @@ import ListView from '../view/list-view.js';
 import LoadingView from '../view/loading-view.js';
 import TripInfoView from '../view/header-trip-info-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
-import PointPresenter from './point-presenter.js';
+import PointPresenter, { State as PointPresenterViewState } from './point-presenter.js';
 import PointNewPresenter from './point-new-presenter.js';
 import { filter } from '../utils/filter.js';
 
@@ -95,16 +95,31 @@ export default class TripPresenter {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.SAVING);
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.ABORTING);
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#pointNewPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#pointNewPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.DELETING);
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.ABORTING);
+        }
         break;
     }
   }
