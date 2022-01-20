@@ -1,7 +1,7 @@
 import SmartView from './smart-view.js';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { msToTime } from '../utils/ms-to-time.js';
+import { convertMsToTime } from '../utils/ms-to-time.js';
 import dayjs from 'dayjs';
 
 const getTypeMoney = (points, types) => (
@@ -200,7 +200,7 @@ const renderTimeChart = (timeCtx, points, types) => (
           color: '#000000',
           anchor: 'end',
           align: 'start',
-          formatter: (value) => `${msToTime(value)}`,
+          formatter: (value) => `${convertMsToTime(value)}`,
         },
       },
       title: {
@@ -289,15 +289,15 @@ export default class StatisticsView extends SmartView {
   }
 
   #setCharts = () => {
-    const moneyCtx = this.element.querySelector('#money');
-    const typeCtx = this.element.querySelector('#type');
-    const timeCtx = this.element.querySelector('#time');
+    const moneyCtxElement = this.element.querySelector('#money');
+    const typeCtxElement = this.element.querySelector('#type');
+    const timeCtxElement = this.element.querySelector('#time');
     const BAR_HEIGHT = 55;
-    moneyCtx.height = BAR_HEIGHT * this.#types.length;
-    typeCtx.height = BAR_HEIGHT * this.#types.length;
-    timeCtx.height = BAR_HEIGHT * this.#types.length;
-    renderMoneyChart(moneyCtx, this._data, this.#types);
-    renderTypeChart(typeCtx, this._data, this.#types);
-    renderTimeChart(timeCtx, this._data, this.#types);
+    moneyCtxElement.height = BAR_HEIGHT * this.#types.length;
+    typeCtxElement.height = BAR_HEIGHT * this.#types.length;
+    timeCtxElement.height = BAR_HEIGHT * this.#types.length;
+    renderMoneyChart(moneyCtxElement, this._data, this.#types);
+    renderTypeChart(typeCtxElement, this._data, this.#types);
+    renderTimeChart(timeCtxElement, this._data, this.#types);
   }
 }
