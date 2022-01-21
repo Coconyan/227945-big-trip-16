@@ -2,16 +2,16 @@ import { remove, render, RenderPosition } from '../utils/render.js';
 import { UserAction, UpdateType } from '../utils/const.js';
 import EditView from '../view/form-edit-view.js';
 
-const tripMainAddButtonElement = document.querySelector('.trip-main__event-add-btn ');
-
 export default class pointNewPresenter {
   #pointListContainer = null;
   #changeData = null;
   #pointEditComponent = null;
+  #tripAddButtonElement = null;
 
-  constructor(pointListContainer, changeData) {
+  constructor(pointListContainer, tripAddButtonElement, changeData) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
+    this.#tripAddButtonElement = tripAddButtonElement;
   }
 
   init = (destinations, types) => {
@@ -22,7 +22,7 @@ export default class pointNewPresenter {
     this.#pointEditComponent = new EditView(undefined ,destinations, types);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
-    tripMainAddButtonElement.disabled = true;
+    this.#tripAddButtonElement.disabled = true;
 
     render(this.#pointListContainer, this.#pointEditComponent, RenderPosition.AFTERBEGIN);
 
@@ -36,7 +36,7 @@ export default class pointNewPresenter {
 
     remove(this.#pointEditComponent);
     this.#pointEditComponent = null;
-    tripMainAddButtonElement.disabled = false;
+    this.#tripAddButtonElement.disabled = false;
 
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }

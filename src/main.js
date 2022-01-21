@@ -15,12 +15,13 @@ const tripControlsElement = document.querySelector('.trip-controls__navigation')
 const tripFiltersElement = document.querySelector('.trip-controls__filters');
 const tripEventsElement = document.querySelector('.trip-events');
 const tripMainElement = document.querySelector('.trip-main');
+const tripMainAddButtonElement = tripMainElement.querySelector('.trip-main__event-add-btn ');
 const siteMenuComponent = new MenuView();
 
 const pointsModel = new PointsModel(apiService);
 const filterModel = new FilterModel();
 
-const tripPresenter = new TripPresenter(tripEventsElement, tripMainElement, pointsModel, filterModel);
+const tripPresenter = new TripPresenter(tripEventsElement, tripMainElement, tripMainAddButtonElement, pointsModel, filterModel);
 const filterPresenter = new FilterPresenter(tripFiltersElement, filterModel, pointsModel);
 
 let statisticComponent = null;

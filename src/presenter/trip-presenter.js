@@ -28,12 +28,12 @@ export default class TripPresenter {
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(tripContainer, tripInfoContainer, pointsModel, filterModel) {
+  constructor(tripContainer, tripInfoContainer, tripAddButtonElement, pointsModel, filterModel) {
     this.#tripContainer = tripContainer;
     this.#tripInfoContainer = tripInfoContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-    this.#pointNewPresenter = new PointNewPresenter(this.#pointListComponent, this.#handleViewAction);
+    this.#pointNewPresenter = new PointNewPresenter(this.#pointListComponent, tripAddButtonElement, this.#handleViewAction);
   }
 
   get points() {
