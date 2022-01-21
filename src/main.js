@@ -18,7 +18,6 @@ const tripMainElement = document.querySelector('.trip-main');
 const siteMenuComponent = new MenuView();
 
 const pointsModel = new PointsModel(apiService);
-
 const filterModel = new FilterModel();
 
 const tripPresenter = new TripPresenter(tripEventsElement, tripMainElement, pointsModel, filterModel);

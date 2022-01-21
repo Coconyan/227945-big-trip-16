@@ -20,11 +20,11 @@ export default class MenuView extends AbstractView {
   }
 
   setMenuItem = (menuItem) => {
-    const item = this.element.querySelector(`[value=${menuItem}]`);
-    const anotherItem = this.element.querySelector(`a:not([value=${menuItem}])`);
-    if (item !== null) {
-      item.classList.add('trip-tabs__btn--active');
-      anotherItem.classList.remove('trip-tabs__btn--active');
+    const itemElement = this.element.querySelector(`[value=${menuItem}]`);
+    const anotherItemElement = this.element.querySelector(`a:not([value=${menuItem}])`);
+    if (itemElement !== null) {
+      itemElement.classList.add('trip-tabs__btn--active');
+      anotherItemElement.classList.remove('trip-tabs__btn--active');
     }
   }
 

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { msToTime } from '../utils/ms-to-time.js';
+import { convertMsToTime } from '../utils/ms-to-time.js';
 import AbstractView from './abstract-view.js';
 
 const createOptionsList = (options) => (
@@ -12,27 +12,27 @@ const createOptionsList = (options) => (
 
 const createListItemTemplate = (point) => {
   const {dateStart, dateEnd, type, offers, destination, price, isFavorite} = point;
-  const dateStarts = dayjs(dateStart); //todo посмотреть наименования переменных по тз
-  const dateEnds = dayjs(dateEnd);
+  const dateStartDayJs = dayjs(dateStart);
+  const dateEndDayJs = dayjs(dateEnd);
   const optionsList = createOptionsList(offers);
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
     : 'event__favorite-btn';
 
-  const timeDifference = msToTime(Math.abs(dateStarts.diff(dateEnds)));
+  const timeDifference = convertMsToTime(Math.abs(dateStartDayJs.diff(dateEndDayJs)));
   return `<li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${dayjs(dateStarts).format('YYYY-MM-DD')}">${dayjs(dateStarts).format('MMM DD')}</time>
+      <time class="event__date" datetime="${dayjs(dateStartDayJs).format('YYYY-MM-DD')}">${dayjs(dateStartDayJs).format('MMM DD')}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
       </div>
       <h3 class="event__title">${type} ${destination.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${dayjs(dateStarts).format('YYYY-MM-DDThh:mm')}">${dayjs(dateStarts).format('hh:mm')}</time>
+          <time class="event__start-time" datetime="${dayjs(dateStartDayJs).format('YYYY-MM-DDThh:mm')}">${dayjs(dateStartDayJs).format('hh:mm')}</time>
           &mdash;
-          <time class="event__end-time" datetime="${dayjs(dateEnds).format('YYYY-MM-DDThh:mm')}">${dayjs(dateEnds).format('hh:mm')}</time>
+          <time class="event__end-time" datetime="${dayjs(dateEndDayJs).format('YYYY-MM-DDThh:mm')}">${dayjs(dateEndDayJs).format('hh:mm')}</time>
         </p>
         <p class="event__duration">${timeDifference}</p>
       </div>

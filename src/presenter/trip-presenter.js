@@ -204,7 +204,7 @@ export default class TripPresenter {
     render(this.#pointListComponent, this.#emptyListComponent, RenderPosition.BEFOREEND);
   }
 
-  #renderTripInfo = (points) => { // todo вынести в отдельный презентер
+  #renderTripInfo = (points) => {
     this.#tripInfoComponent = new TripInfoView(points);
     render(this.#tripInfoContainer, this.#tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
