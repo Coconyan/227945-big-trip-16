@@ -1,8 +1,10 @@
 import { RenderPosition, render, replace, remove } from '../utils/render.js';
 import ListItemView from '../view/list-item-view.js';
-import EditView from '../view/form-edit-view.js';
+import EditView from '../view/edit-view.js';
 import { UpdateType, UserAction } from '../utils/const.js';
+import { isEscKey } from '../utils/is-esc-key.js';
 import dayjs from 'dayjs';
+
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
@@ -126,7 +128,7 @@ export default class PointPresenter {
   };
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscKey(evt)) {
       evt.preventDefault();
       this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();

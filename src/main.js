@@ -1,6 +1,6 @@
 import { RenderPosition, render, remove } from './utils/render.js';
 import MenuView from './view/menu-view.js';
-import StatisticsView from './view/statistic-view.js';
+import StatisticsView from './view/statistics-view.js';
 import TripPresenter from './presenter/trip-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import PointsModel from './model/points-model.js';

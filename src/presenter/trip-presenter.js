@@ -4,7 +4,7 @@ import { sortDate, sortPrice, sortTime } from '../utils/sort.js';
 import SortView from '../view/sort-view.js';
 import ListView from '../view/list-view.js';
 import LoadingView from '../view/loading-view.js';
-import TripInfoView from '../view/header-trip-info-view.js';
+import TripInfoView from '../view/trip-info-view.js';
 import ListEmptyView from '../view/list-empty-view.js';
 import PointPresenter, { State as PointPresenterViewState } from './point-presenter.js';
 import PointNewPresenter from './point-new-presenter.js';

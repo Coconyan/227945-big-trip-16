@@ -5,39 +5,30 @@ import { convertMsToTime } from '../utils/ms-to-time.js';
 import dayjs from 'dayjs';
 
 const getTypeMoney = (points, types) => (
-  types.map((type) => {
-    const sum = points.reduce((accumulator, point) => {
-      if (type === point.type) {
-        return accumulator + point.price;
-      }
-      return accumulator;
-    }, 0);
-    return sum;
-  })
+  types.map((type) => points.reduce((accumulator, point) => {
+    if (type === point.type) {
+      return accumulator + point.price;
+    }
+    return accumulator;
+  }, 0))
 );
 
 const getTypeCount = (points, types) => (
-  types.map((type) => {
-    const count = points.reduce((accumulator, point) => {
-      if (type === point.type) {
-        return ++accumulator;
-      }
-      return accumulator;
-    }, 0);
-    return count;
-  })
+  types.map((type) => points.reduce((accumulator, point) => {
+    if (type === point.type) {
+      return ++accumulator;
+    }
+    return accumulator;
+  }, 0))
 );
 
 const getTypeTime = (points, types) => (
-  types.map((type) => {
-    const time = points.reduce((accumulator, point) => {
-      if (type === point.type) {
-        return accumulator + Math.abs(dayjs(point.dateStart).diff(dayjs(point.dateEnd)));
-      }
-      return accumulator;
-    }, 0);
-    return time;
-  })
+  types.map((type) => points.reduce((accumulator, point) => {
+    if (type === point.type) {
+      return accumulator + Math.abs(dayjs(point.dateStart).diff(dayjs(point.dateEnd)));
+    }
+    return accumulator;
+  }, 0))
 );
 
 const renderMoneyChart = (moneyCtx, points, types) => (

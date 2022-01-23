@@ -1,7 +1,7 @@
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { filter } from '../utils/filter.js';
 import { FilterType, UpdateType } from '../utils/const.js';
-import SiteFilterView from '../view/filters-view.js';
+import FilterView from '../view/filter-view.js';
 
 
 export default class FilterPresenter {
@@ -43,7 +43,7 @@ export default class FilterPresenter {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new SiteFilterView(filters, this.#filterModel.filter);
+    this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
